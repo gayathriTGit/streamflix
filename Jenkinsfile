@@ -18,8 +18,9 @@ pipeline {
             steps {
                 sh '''
                 docker version
-                docker rmi gayathritdocker/streamflix-deployment:1.0 -f || true 
-		docker build -t gayathritdocker/streamflix-deployment:1.0 ."
+                // docker rmi gayathritdocker/streamflix-deployment:1.0 -f || true 
+				sudo docker build -t streamflix-deployment:1.0 .
+		        sudo docker tag streamflix-deployment:1.0 gayathritdocker/streamflix-deployment:1.0
                 '''
             }
         }
