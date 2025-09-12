@@ -1,48 +1,46 @@
 pipeline {
     agent any
-    environment {
-            // 'dockerhub-creds' is the ID you assigned to your credentials in Jenkins
-            DOCKER_HUB_CREDS = credentials('DOCKER_HUB_CREDENTIALS')
-        }
-    stages {
-     
-        stage('Checkout') {
-            steps { 
-                script {
-                    git branch: 'main', url: 'https://github.com/gayathriTGit/streamflix.git'
-                }
-            }
-        }
+ environment {
+    IMAGE = "gayathritdocker/streamflix-deployment"
+    TAG   = "1.0" // or "${env.BUILD_NUMBER}"
+  }
+  stages {
 
-        stage('Build') {
-            steps {
-                sh '''
-                docker version
-                // docker rmi gayathritdocker/streamflix-deployment:1.0 -f || true 
-				sudo docker build -t streamflix-deployment:1.0 .
-		        sudo docker tag streamflix-deployment:1.0 gayathritdocker/streamflix-deployment:1.0
-                '''
-            }
-        }
+    stage('Checkout') {
+      steps {
+        git branch: 'main', url: 'https://github.com/gayathriTGit/streamflix.git'
+      }
+    }
 
-        stage('Push Docker Image') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}"
-                    sh "docker push gayathritdocker/streamflix-deployment:1.0"
-                    sh "docker logout" // Optional: log out after pushing
-                }
-            }
+    stage('Docker login') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'DOCKER_HUB_CREDENTIALS',
+          usernameVariable: 'DOCKER_USER',
+          passwordVariable: 'DOCKER_TOKEN'
+        )]) {
+          sh '''
+            echo "$DOCKER_TOKEN" | docker login -u "$DOCKER_USER" --password-stdin
+          '''
         }
-    
-        stage('Deploy to Kubernetes') {
-            steps {
-                script {
-                   // Example using kubectl
-                   sh 'kubectl apply -f deployment.yaml'
-                   sh 'kubectl apply -f service.yaml'
-                }
-            }
-       }
+      }
+    }
+
+    stage('Build') {
+      steps {
+        sh '''
+          docker version
+          # docker rmi ${IMAGE}:${TAG} -f || true
+          docker build -t ${IMAGE}:${TAG} .
+        '''
+      }
+    }
+
+    stage('Push Docker Image') {
+      steps {
+        sh '''
+          docker push ${IMAGE}:${TAG}
+        '''
+      }
     }
 }
