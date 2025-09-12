@@ -13,13 +13,7 @@ pipeline {
                 }
             }
         }
-        stage('Docker Login') {
-            steps {
-                // Use the automatically generated _USR and _PSW variables
-                // The --password-stdin flag is crucial for secure password handling
-                sh 'echo $DOCKER_HUB_CREDS | docker login -u $DOCKER_HUB_CREDS_USR --password-stdin'
-            }
-        }
+
         stage('Build') {
             steps {
                 sh '''
