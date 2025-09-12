@@ -51,9 +51,9 @@ pipeline {
                   sh 'kubectl get nodes'
                 }
                 kubernetesDeploy(
-                    kubeconfigId: 'KUBECONFIG_STREAMFLIX', // ID of your Kubernetes credentials in Jenkins                    
-                    configs: 'kubernetes/*.yaml', // Path to your Kubernetes manifest files
-                )
+                  kubeconfigId: 'KUBECONFIG_STREAMFLIX',
+                  configs: 'kubernetes/*.yaml',
+                  enableConfigSubstitution: true                )
             }
         }
 
