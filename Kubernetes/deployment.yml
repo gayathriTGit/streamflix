@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: netflix-app
+  name: streamflix-app
   labels:
-    app: netflix-app
+    app: streamflix-app
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
-      app: netflix-app
+      app: streamflix-app
   template:
     metadata:
       labels:
-        app: netflix-app
+        app: streamflix-app
     spec:
       containers:
-      - name: netflix-app
-        image: sevenajay/netflix:latest
+      - name: streamflix-app
+        image: gayathritdocker/streamflix-deployment:1.0
         ports:
         - containerPort: 80
