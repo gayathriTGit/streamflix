@@ -44,15 +44,13 @@ pipeline {
         }
       }
 
-      stage('Deploy to Kubernetes') {
+     stage('Deploy to Kubernetes') {
             steps {
-                script {
-                   // Example using kubectl
-                   sh 'kubectl apply -f deployment.yaml'
-                   sh 'kubectl apply -f service.yaml'
-                }
+                kubernetesDeploy(
+                    configs: 'kubernetes/*.yaml', // Path to your Kubernetes manifest files
+                )
             }
-       }
+        }
 
   }
 
