@@ -53,6 +53,7 @@ pipeline {
               sh 'kubectl apply -f Kubernetes/service.yml'
             }                
         }
+     }
 
   }
 
