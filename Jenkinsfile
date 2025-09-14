@@ -25,7 +25,22 @@ pipeline {
           }
         }
       }
-
+      
+      stage('Trivy FS scan (repo)') {
+        steps {
+          // fails build on HIGH/CRITICAL; secret scan included by default
+          sh '''
+            trivy fs --no-progress \
+              --severity CRITICAL,HIGH \
+              --exit-code 1 \
+              --format sarif -o trivy-fs.sarif .
+            # also keep a human-friendly txt
+            trivy fs --no-progress \
+              --severity CRITICAL,HIGH \
+              --exit-code 0 > trivy-fs.txt
+          '''
+        }
+      }
       stage('Build') {
         steps {
           sh '''
@@ -36,9 +51,15 @@ pipeline {
         }
       }
 
-      stage('Push Docker Image') {
+      stage('Trivy scan image and Push Docker Image') {
         steps {
           sh '''
+            trivy image --no-progress \
+              --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1 \
+              --format sarif -o trivy-image.sarif "$IMAGE":${TAG}
+            trivy image --no-progress \
+              --severity CRITICAL,HIGH --ignore-unfixed --exit-code 0 \
+              > trivy-image.txt
             docker push ${IMAGE}:${TAG}
           '''
         }
@@ -55,6 +76,10 @@ pipeline {
         }
      }
 
+    }
+    post {
+        always {
+          archiveArtifacts artifacts: 'trivy-*.sarif, trivy-*.txt', fingerprint: true
+    }
   }
-
 }
