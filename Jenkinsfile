@@ -31,7 +31,7 @@ pipeline {
           sh '''
             docker version
             # docker rmi ${IMAGE}:${TAG} -f || true
-            docker build -t ${IMAGE}:${TAG} .
+            docker build --no-cache --build-arg TMDB_V3_API_KEY=ac3b6efa58f183f1a4ed954f10af69ba -t ${IMAGE}:${TAG} .
           '''
         }
       }
