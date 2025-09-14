@@ -34,10 +34,6 @@ pipeline {
               --severity CRITICAL,HIGH \
               --exit-code 1 \
               --format sarif -o trivy-fs.sarif .
-            # also keep a human-friendly txt
-            trivy fs --no-progress \
-              --severity CRITICAL,HIGH \
-              --exit-code 0 > trivy-fs.txt
           '''
         }
       }
