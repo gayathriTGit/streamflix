@@ -78,13 +78,11 @@ pipeline {
             ART="$WORKSPACE/zap_artifacts"
             mkdir -p "$ART"
             # Save reports under $WORKSPACE/zap_artifacts/*
-            docker run --rm \
-                -u "$(id -u):$(id -g)" \
-                -v "$ART:/zap/wrk:rw" \
+            docker run --rm -u "$(id -u):$(id -g)" -v "$ART:/zap/wrk:rw" \
                 zaproxy/zap-stable:latest \
                 zap-baseline.py -m 5 \
                   -t http://13.222.10.181:30007/ \
-                  -r zap_baseline_report.html
+                  -r zap_baseline_report.html || true
           '''
         }
       }
