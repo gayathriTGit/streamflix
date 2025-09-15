@@ -70,10 +70,28 @@ pipeline {
         }
      }
 
+      stage('OWASP baseline scan for http://13.222.10.181:30007/') {
+        steps {
+          sh '''
+                # 1) make an absolute artifacts dir
+                ART="$(pwd)/zap_artifacts"
+                mkdir -p "$ART"
+                
+                # 2) sanity: show it
+                ls -ld "$ART"
+                
+                # 3) run ZAP baseline w/ proper mount + uid/gid
+                docker run --rm -u "$(id -u):$(id -g)" zaproxy/zap-stable:latest zap-baseline.py -m 5 \
+                  -t http://13.222.10.181:30007/ \
+                  -r zap_baseline_report.html 
+          '''
+        }
+      }
+
     }
     post {
         always {
-          archiveArtifacts artifacts: 'trivy-*.sarif, trivy-*.txt', fingerprint: true
+          archiveArtifacts artifacts: 'trivy-*.sarif, trivy-*.txt', zap_baseline_report.html, fingerprint: true
     }
   }
 }
