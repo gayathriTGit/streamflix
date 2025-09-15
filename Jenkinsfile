@@ -53,9 +53,7 @@ pipeline {
             trivy image --no-progress \
               --severity CRITICAL,HIGH --ignore-unfixed --exit-code 1 \
               --format sarif -o trivy-image.sarif "$IMAGE":${TAG}
-            trivy image --no-progress \
-              --severity CRITICAL,HIGH --ignore-unfixed --exit-code 0 \
-              > trivy-image.txt
+
             docker push ${IMAGE}:${TAG}
           '''
         }
